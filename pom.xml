@@ -2,14 +2,14 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.h2rd</groupId>
-	<artifactId>java-refactoring-test</artifactId>
-	<packaging>war</packaging>
-	<version>0.0.1-SNAPSHOT</version>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.h2rd</groupId>
+    <artifactId>java-refactoring-test</artifactId>
+    <packaging>war</packaging>
+    <version>0.0.1-SNAPSHOT</version>
 
-	<name>Java Refactoring Test</name>
-	<description>Java Refactoring Test</description>
+    <name>Java Refactoring Test</name>
+    <description>Java Refactoring Test</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -24,6 +24,12 @@
         <jersey_test_framework_provider_grizzly2.version>2.29</jersey_test_framework_provider_grizzly2.version>
         <jacoco_maven_plugin.version>0.8.5</jacoco_maven_plugin.version>
         <spring.version>5.2.2.RELEASE</spring.version>
+
+        <sonar.projectKey>alorchenkov_java-refactoring-test</sonar.projectKey>
+        <sonar.organization>alorchenkov</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.login>be288f87126eb600b790adb609db08c3f27b3fa3</sonar.login>
+        <sonar.coverage.jacoco.xmlReportPath>/target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPath>
     </properties>
 
     <dependencies>
@@ -67,6 +73,7 @@
             <artifactId>spring-boot-starter-tomcat</artifactId>
             <scope>provided</scope>
         </dependency>
+
     </dependencies>
 
     <build>

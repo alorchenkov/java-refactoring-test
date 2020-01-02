@@ -15,7 +15,7 @@ import java.util.Arrays;
 public class RefactorApplication extends SpringBootServletInitializer {
 
     public static void main(String[] args) {
-        SpringApplication.run(RefactorApplication.class, args);
+        SpringApplication.run(RefactorApplication.class);
     }
 
     @Override
@@ -25,7 +25,7 @@ public class RefactorApplication extends SpringBootServletInitializer {
 
     @Bean
     public CommandLineRunner loadData(final UserOperations repository) {
-        return (args) -> {
+        return args -> {
             // save some users
             repository.saveUser(new User("Marta Smith", "marta@test.com", Arrays.asList("ADMIN")));
             repository.saveUser(new User("John Goose", "john@test.com", Arrays.asList("USER, GUEST")));
