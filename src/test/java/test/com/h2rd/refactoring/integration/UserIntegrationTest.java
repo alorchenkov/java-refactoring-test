@@ -20,7 +20,6 @@ import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
@@ -186,19 +185,17 @@ public final class UserIntegrationTest {
         return result;
     }
 
-    public void deleteUser(final String email) {
+    public ResponseEntity<User> deleteUser(final String email) {
         final RestTemplate testRestTemplate = new RestTemplateBuilder().errorHandler(new NoOpResponseErrorHandler()).build();
 
         final UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("http://localhost:" + randomServerPort + "/rest" + BASE_PATH + "/delete")
                 .queryParam("email", email);
-        final ResponseEntity<User> response =
-
-                testRestTemplate.exchange(builder.toUriString(), HttpMethod.DELETE, null, User.class);
+        return testRestTemplate.exchange(builder.toUriString(), HttpMethod.DELETE, null, User.class);
     }
 
-    public void addUser(final User user) {
+    public ResponseEntity<User> addUser(final User user) {
         final RestTemplate testRestTemplate = new RestTemplateBuilder().errorHandler(new NoOpResponseErrorHandler()).build();
 
-        final ResponseEntity<User> result = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/rest" + BASE_PATH + "/add", HttpMethod.POST, new HttpEntity<>(user), User.class);
+        return testRestTemplate.exchange("http://localhost:" + randomServerPort + "/rest" + BASE_PATH + "/add", HttpMethod.POST, new HttpEntity<>(user), User.class);
     }
 }
