@@ -4,6 +4,10 @@ language: java
 jdk:
    - oraclejdk8
 
+branches:
+  only:
+    - new-refactored-release
+
 before_script:
   - mkdir -p shippable/testresults
   - ln -s ../target/surefire-reports shippable/testresults
