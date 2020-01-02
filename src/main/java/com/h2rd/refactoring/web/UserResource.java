@@ -1,107 +1,91 @@
 package com.h2rd.refactoring.web;
 
 import com.h2rd.refactoring.usermanagement.User;
-import com.h2rd.refactoring.usermanagement.UserDao;
+import com.h2rd.refactoring.usermanagement.UserOperations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.ws.rs.*;
 import javax.ws.rs.core.GenericEntity;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.stereotype.Repository;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 @Path("/users")
-@Repository
-public class UserResource{
+@Component
+@Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+public class UserResource {
 
-    public UserDao userDao;
+    private static final String USER_NOT_FOUND = "User not found.";
 
-    @GET
-    @Path("add/")
-    public Response addUser(@QueryParam("name") String name,
-                            @QueryParam("email") String email,
-                            @QueryParam("role") List<String> roles) {
+    @Autowired
+    private UserOperations userDao;
 
-        User user = new User();
-        user.setName(name);
-        user.setEmail(email);
-        user.setRoles(roles);
+    @PostConstruct
+    private void checkDI() {
+        checkNotNull(userDao, "userDao must not be null!");
+    }
 
-        if (userDao == null) {
-            userDao = UserDao.getUserDao();
-        }
-
+    @POST
+    @Path("/add")
+    public Response addUser(final User user) {
+        validateUser(user);
         userDao.saveUser(user);
         return Response.ok().entity(user).build();
     }
 
-    @GET
-    @Path("update/")
-    public Response updateUser(@QueryParam("name") String name,
-                               @QueryParam("email") String email,
-                               @QueryParam("role") List<String> roles) {
+    private void validateUser(final User user) {
 
-        User user = new User();
-        user.setName(name);
-        user.setEmail(email);
-        user.setRoles(roles);
+    }
 
-        if (userDao == null) {
-            userDao = UserDao.getUserDao();
-        }
-
+    @PUT
+    @Path("/update")
+    public Response updateUser(final User user) {
+        //validateRoles(user);
         userDao.updateUser(user);
         return Response.ok().entity(user).build();
     }
 
-    @GET
-    @Path("delete/")
-    public Response deleteUser(@QueryParam("name") String name,
-                               @QueryParam("email") String email,
-                               @QueryParam("role") List<String> roles) {
-        User user = new User();
-        user.setName(name);
-        user.setEmail(email);
-        user.setRoles(roles);
+    @DELETE
+    @Path("/delete")
+    public Response deleteUser(@QueryParam("email") final String email) {
 
-        if (userDao == null) {
-            userDao = UserDao.getUserDao();
-        }
+        final User user = new User("", email, new ArrayList<>());
+        //validateEmail(email)
 
         userDao.deleteUser(user);
+
         return Response.ok().entity(user).build();
     }
 
     @GET
-    @Path("find/")
+    @Path("/find")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getUsers() {
-    	
-        ApplicationContext context = new ClassPathXmlApplicationContext(new String[] {
-    		"classpath:/application-config.xml"	
-    	});
-    	userDao = context.getBean(UserDao.class);
-    	List<User> users = userDao.getUsers();
-    	if (users == null) {
-    		users = new ArrayList<User>();
-    	}
 
-        GenericEntity<List<User>> usersEntity = new GenericEntity<List<User>>(users) {};
+        final List<User> users = userDao.getUsers();
+
+        final GenericEntity<List<User>> usersEntity = new GenericEntity<List<User>>(users) {
+        };
+
         return Response.status(200).entity(usersEntity).build();
     }
 
     @GET
-    @Path("search/")
-    public Response findUser(@QueryParam("name") String name) {
+    @Path("/search")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response findUser(@QueryParam("name") final String name) {
+        //validateEmail(name)
 
-        if (userDao == null) {
-            userDao = UserDao.getUserDao();
+        final User user = userDao.findUser(name);
+        if (user != null) {
+            return Response.ok().entity(user).build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).entity(USER_NOT_FOUND).build();
         }
-
-        User user = userDao.findUser(name);
-        return Response.ok().entity(user).build();
     }
 }
