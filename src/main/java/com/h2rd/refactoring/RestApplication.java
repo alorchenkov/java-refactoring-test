@@ -13,7 +13,6 @@ public class RestApplication extends ResourceConfig {
 
     @PostConstruct
     public void init() {
-        packages("com.h2rd.refactoring.web");
         register(UserResource.class);
     }
 }
