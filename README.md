@@ -1,6 +1,9 @@
 Spring Boot Jersey Application:
 1. Persistence Layer: Java Collection.
 
+Code Quality report link - it is available for collaborates Github users:
+https://sonarcloud.io/dashboard?id=alorchenkov_java-refactoring-test
+
 How to run:
 Required pre-installed software: maven and Java 8+.
 1. Download/clone project;
