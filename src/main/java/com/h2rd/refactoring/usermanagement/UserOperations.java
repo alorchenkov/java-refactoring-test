@@ -12,4 +12,6 @@ public interface UserOperations {
     void updateUser(User userToUpdate);
 
     User findUser(String name);
+
+    User findUserById(String email);
 }

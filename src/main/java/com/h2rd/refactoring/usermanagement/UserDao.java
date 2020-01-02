@@ -30,11 +30,14 @@ public class UserDao implements UserOperations {
 
     @Override
     public void updateUser(final User userToUpdate) {
-        for (final User user : users) {
-            if (StringUtils.equals(user.getEmail(), userToUpdate.getEmail())) {
-                user.setName(userToUpdate.getName());
-                user.setRoles(userToUpdate.getRoles());
-            }
+        final User modified = users.stream()
+                .filter(user -> StringUtils.equals(userToUpdate.getEmail(), user.getEmail()))
+                .findAny()
+                .orElse(null);
+
+        if (modified != null) {
+            modified.setName(userToUpdate.getName());
+            modified.setRoles(userToUpdate.getRoles());
         }
     }
 
@@ -42,6 +45,14 @@ public class UserDao implements UserOperations {
     public User findUser(final String name) {
         return users.stream()
                 .filter(user -> StringUtils.equals(name, user.getName()))
+                .findAny()
+                .orElse(null);
+    }
+
+    @Override
+    public User findUserById(final String email) {
+        return users.stream()
+                .filter(user -> StringUtils.equals(email, user.getEmail()))
                 .findAny()
                 .orElse(null);
     }

@@ -111,7 +111,7 @@ public final class UserIntegrationTest {
         final User updated = new User();
         updated.setName("integration");
         updated.setEmail("updated@integration.com");
-        updated.setRoles(new ArrayList<>());
+        updated.getRoles().add("testrole");
 
         final RestTemplate testRestTemplate = new RestTemplateBuilder().errorHandler(new NoOpResponseErrorHandler()).build();
 
@@ -126,13 +126,29 @@ public final class UserIntegrationTest {
 
         final User updated = new User();
         updated.setName("integration");
-        updated.setEmail("updated@integration.com");
-        updated.setRoles(new ArrayList<>());
+        updated.setEmail("initial@integration.com");
+        updated.getRoles().add("testrole");
 
         final RestTemplate testRestTemplate = new RestTemplateBuilder().errorHandler(new NoOpResponseErrorHandler()).build();
 
         final ResponseEntity<User> result = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/rest" + BASE_PATH + "/update", HttpMethod.PUT, new HttpEntity<>(updated), User.class);
         assertEquals(200, result.getStatusCodeValue());
+
+        assertEquals(1, getUsers().size());
+    }
+
+    @Test
+    public void updateUser404Test() {
+
+        final User updated = new User();
+        updated.setName("integration");
+        updated.setEmail("updated1@integration.com");
+        updated.getRoles().add("testrole");
+
+        final RestTemplate testRestTemplate = new RestTemplateBuilder().errorHandler(new NoOpResponseErrorHandler()).build();
+
+        final ResponseEntity<String> result = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/rest" + BASE_PATH + "/update", HttpMethod.PUT, new HttpEntity<>(updated), String.class);
+        assertEquals(404, result.getStatusCodeValue());
 
         assertEquals(1, getUsers().size());
     }
@@ -143,7 +159,7 @@ public final class UserIntegrationTest {
         final User integration = new User();
         integration.setName("integration");
         integration.setEmail("initial@integration.com");
-        integration.setRoles(new ArrayList<>());
+        integration.getRoles().add("testrole");
 
         addUser(integration);
     }

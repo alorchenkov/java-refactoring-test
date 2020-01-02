@@ -42,6 +42,10 @@ public final class UserResourceUnitTest {
     @Test
     public void saveUserTest() {
         final User user = new User();
+        user.setName("testname");
+        user.setEmail("testemail");
+        user.getRoles().add("testrole");
+
         final Response response = userResource.addUser(user);
 
         assertEquals(200, response.getStatus());
@@ -52,16 +56,25 @@ public final class UserResourceUnitTest {
     @Test
     public void updateUserTest() {
         final User user = new User();
+        user.setName("testname");
+        user.setEmail("testemail");
+        user.getRoles().add("testrole");
+
+        when(userDao.findUserById(eq("testemail"))).thenReturn(user);
+
         final Response response = userResource.updateUser(user);
 
         assertEquals(200, response.getStatus());
 
         verify(userDao, times(1)).updateUser(same(user));
+        verify(userDao, times(1)).findUserById(eq("testemail"));
     }
 
 
     @Test
     public void deleteUserTest() {
+        when(userDao.findUserById(eq("test"))).thenReturn(new User());
+
         final Response response = userResource.deleteUser("test");
 
         assertEquals(200, response.getStatus());
@@ -91,5 +104,68 @@ public final class UserResourceUnitTest {
         assertSame(user, response.getEntity());
 
         verify(userDao, times(1)).findUser(eq("test1"));
+    }
+
+    @Test
+    public void saveExistingUserTest() {
+        final User user = new User();
+        user.setName("testname");
+        user.setEmail("testemail");
+        user.getRoles().add("testrole");
+
+        when(userDao.findUserById(eq("testemail"))).thenReturn(user);
+        final Response response = userResource.addUser(user);
+
+        assertEquals(400, response.getStatus());
+        assertEquals("User already exists.", response.getEntity());
+
+        verify(userDao, times(0)).saveUser(same(user));
+        verify(userDao, times(1)).findUserById(eq("testemail"));
+    }
+
+    @Test
+    public void saveNoRoleUserTest() {
+        final User user = new User();
+        user.setName("testname");
+        user.setEmail("testemail");
+
+        final Response response = userResource.addUser(user);
+
+        assertEquals(400, response.getStatus());
+        assertEquals("User has to have at least one role!", response.getEntity());
+
+        verify(userDao, times(0)).saveUser(same(user));
+        verify(userDao, times(0)).findUserById(eq("testemail"));
+    }
+
+    @Test
+    public void saveNoNameUserTest() {
+        final User user = new User();
+        user.setName(" ");
+        user.setEmail("testemail");
+        user.getRoles().add("testrole");
+
+        final Response response = userResource.addUser(user);
+
+        assertEquals(400, response.getStatus());
+        assertEquals("Name is mandatory!", response.getEntity());
+
+        verify(userDao, times(0)).saveUser(same(user));
+        verify(userDao, times(0)).findUserById(eq("testemail"));
+    }
+    @Test
+    public void saveNoEmailUserTest() {
+        final User user = new User();
+        user.setName("testname");
+        user.setEmail(" ");
+        user.getRoles().add("testrole");
+
+        final Response response = userResource.addUser(user);
+
+        assertEquals(400, response.getStatus());
+        assertEquals("Email is mandatory!", response.getEntity());
+
+        verify(userDao, times(0)).saveUser(same(user));
+        verify(userDao, times(0)).findUserById(eq("testemail"));
     }
 }
