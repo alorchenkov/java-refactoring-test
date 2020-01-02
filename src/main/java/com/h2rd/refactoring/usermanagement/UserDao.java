@@ -4,36 +4,36 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
 public class UserDao implements UserOperations {
-
-    private List<User> users = Collections.synchronizedList(new ArrayList<User>());
-    ;
+    private Map<String, User> store = new ConcurrentHashMap<>();
 
     @Override
     public void saveUser(final User user) {
-        users.add(user);
+        if (!store.containsKey(user.getEmail())) {
+            store.put(user.getEmail(), user);
+        }
     }
 
     @Override
     public List<User> getUsers() {
-        return new ArrayList<>(users);
+        return new ArrayList<>(store.values());
     }
 
     @Override
     public void deleteUser(final User userToDelete) {
-        users.removeIf(user -> StringUtils.equals(user.getEmail(), userToDelete.getEmail()));
+        if (store.containsKey(userToDelete.getEmail())) {
+            store.remove(userToDelete.getEmail());
+        }
     }
 
     @Override
     public void updateUser(final User userToUpdate) {
-        final User modified = users.stream()
-                .filter(user -> StringUtils.equals(userToUpdate.getEmail(), user.getEmail()))
-                .findAny()
-                .orElse(null);
+        final User modified = store.getOrDefault(userToUpdate.getEmail(), null);
 
         if (modified != null) {
             modified.setName(userToUpdate.getName());
@@ -43,7 +43,7 @@ public class UserDao implements UserOperations {
 
     @Override
     public User findUser(final String name) {
-        return users.stream()
+        return store.values().stream()
                 .filter(user -> StringUtils.equals(name, user.getName()))
                 .findAny()
                 .orElse(null);
@@ -51,9 +51,6 @@ public class UserDao implements UserOperations {
 
     @Override
     public User findUserById(final String email) {
-        return users.stream()
-                .filter(user -> StringUtils.equals(email, user.getEmail()))
-                .findAny()
-                .orElse(null);
+        return store.getOrDefault(email, null);
     }
 }
