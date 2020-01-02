@@ -102,7 +102,7 @@ public class UserResource {
         final User existingUser = userDao.findUserById(user.getEmail());
         if (existingUser != null) {
             userDao.deleteUser(user);
-            return Response.ok().entity(new GenericEntity<User>(user) {
+            return Response.ok().entity(new GenericEntity<User>(existingUser) {
             }).build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).entity(USER_NOT_FOUND).build();
