@@ -21,6 +21,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Collection;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -62,13 +63,16 @@ public final class UserIntegrationTest {
     @Test
     public void testSearchUser() {
         final RestTemplate testRestTemplate = new RestTemplate();
-        final ResponseEntity<User> response =
-                testRestTemplate.exchange("http://localhost:" + randomServerPort + "/rest/" + BASE_PATH + "/search?name=integration", HttpMethod.GET, null, new ParameterizedTypeReference<User>() {
+        final UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("http://localhost:" + randomServerPort + "/rest" + BASE_PATH + "/search")
+                .queryParam("name", "integration");
+
+        final ResponseEntity<List<User>> response =
+                testRestTemplate.exchange(builder.toUriString(), HttpMethod.GET, null, new ParameterizedTypeReference<List<User>>() {
                 });
 
         assertEquals(HttpStatus.OK_200.getStatusCode(), response.getStatusCode().value());
 
-        final User actual = response.getBody();
+        final User actual = response.getBody().get(0);
 
         assertEquals("initial@integration.com", actual.getEmail());
         assertEquals("integration", actual.getName());
@@ -86,6 +90,7 @@ public final class UserIntegrationTest {
 
 
         assertEquals(404, response.getStatusCodeValue());
+        assertEquals("User not found.", response.getBody());
     }
 
     @Test
@@ -153,7 +158,7 @@ public final class UserIntegrationTest {
     }
 
 
-    public void addUsers() {
+    private void addUsers() {
 
         final User integration = new User();
         integration.setName("integration");
@@ -185,7 +190,7 @@ public final class UserIntegrationTest {
         return result;
     }
 
-    public ResponseEntity<User> deleteUser(final String email) {
+    private ResponseEntity<User> deleteUser(final String email) {
         final RestTemplate testRestTemplate = new RestTemplateBuilder().errorHandler(new NoOpResponseErrorHandler()).build();
 
         final UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("http://localhost:" + randomServerPort + "/rest" + BASE_PATH + "/delete")
@@ -193,7 +198,7 @@ public final class UserIntegrationTest {
         return testRestTemplate.exchange(builder.toUriString(), HttpMethod.DELETE, null, User.class);
     }
 
-    public ResponseEntity<User> addUser(final User user) {
+    private ResponseEntity<User> addUser(final User user) {
         final RestTemplate testRestTemplate = new RestTemplateBuilder().errorHandler(new NoOpResponseErrorHandler()).build();
 
         return testRestTemplate.exchange("http://localhost:" + randomServerPort + "/rest" + BASE_PATH + "/add", HttpMethod.POST, new HttpEntity<>(user), User.class);

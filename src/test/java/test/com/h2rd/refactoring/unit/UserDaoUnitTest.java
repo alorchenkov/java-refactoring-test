@@ -26,7 +26,7 @@ public final class UserDaoUnitTest {
         userDao.saveUser(user);
 
         assertEquals(1, userDao.getUsers().size());
-        assertEquals(user, userDao.findUser("Fake Name"));
+        assertEquals(user, userDao.findUser("Fake Name").get(0));
 
     }
 
@@ -52,7 +52,7 @@ public final class UserDaoUnitTest {
         userDao.updateUser(updated);
 
         assertEquals(1, userDao.getUsers().size());
-        assertEquals(updated, userDao.findUser("Updated"));
+        assertEquals(updated, userDao.findUser("Updated").get(0));
 
     }
 

@@ -17,6 +17,15 @@
         <version>2.2.2.RELEASE</version>
     </parent>
 
+    <properties>
+        <java.version>1.8</java.version>
+        <commons_lang3.version>3.9</commons_lang3.version>
+        <guava.version>23.0</guava.version>
+        <jersey_test_framework_provider_grizzly2.version>2.29</jersey_test_framework_provider_grizzly2.version>
+        <jacoco_maven_plugin.version>0.8.5</jacoco_maven_plugin.version>
+        <spring.version>5.2.2.RELEASE</spring.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -29,12 +38,12 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.9</version>
+            <version>${commons_lang3.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>23.0</version>
+            <version>${guava.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -44,13 +53,13 @@
         <dependency>
             <groupId>org.glassfish.jersey.test-framework.providers</groupId>
             <artifactId>jersey-test-framework-provider-grizzly2</artifactId>
-            <version>2.29</version>
+            <version>${jersey_test_framework_provider_grizzly2.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>5.2.2.RELEASE</version>
+            <version>${spring.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -59,10 +68,6 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
-
-    <properties>
-        <java.version>1.8</java.version>
-    </properties>
 
     <build>
         <plugins>
@@ -73,7 +78,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.5</version>
+                <version>${jacoco_maven_plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>

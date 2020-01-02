@@ -35,7 +35,7 @@ public class UserResource {
     @POST
     @Path("/add")
     public Response addUser(final User user) {
-        final List<String> errors = validateUser(user,true,true,true);
+        final List<String> errors = validateUser(user, true, true, true);
         if (!errors.isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST).entity(errors.get(0)).build();
         }
@@ -43,7 +43,8 @@ public class UserResource {
         final User existingUser = userDao.findUserById(user.getEmail());
         if (existingUser == null) {
             userDao.saveUser(user);
-            return Response.ok().entity(user).build();
+            return Response.ok().entity(new GenericEntity<User>(user) {
+            }).build();
         } else {
             return Response.status(Response.Status.BAD_REQUEST).entity(USER_ALREADY_EXISTS).build();
         }
@@ -73,7 +74,7 @@ public class UserResource {
     @PUT
     @Path("/update")
     public Response updateUser(final User user) {
-        final List<String> errors = validateUser(user,true,true,true);
+        final List<String> errors = validateUser(user, true, true, true);
 
         if (!errors.isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST).entity(errors.get(0)).build();
@@ -82,7 +83,8 @@ public class UserResource {
         final User existingUser = userDao.findUserById(user.getEmail());
         if (existingUser != null) {
             userDao.updateUser(user);
-            return Response.ok().entity(user).build();
+            return Response.ok().entity(new GenericEntity<User>(user) {
+            }).build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).entity(USER_NOT_FOUND).build();
         }
@@ -92,7 +94,7 @@ public class UserResource {
     @Path("/delete")
     public Response deleteUser(@QueryParam("email") final String email) {
         final User user = new User("", email, new ArrayList<>());
-        final List<String> errors = validateUser(user,false,true,false);
+        final List<String> errors = validateUser(user, false, true, false);
         if (!errors.isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST).entity(errors.get(0)).build();
         }
@@ -100,7 +102,8 @@ public class UserResource {
         final User existingUser = userDao.findUserById(user.getEmail());
         if (existingUser != null) {
             userDao.deleteUser(user);
-            return Response.ok().entity(user).build();
+            return Response.ok().entity(new GenericEntity<User>(user) {
+            }).build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).entity(USER_NOT_FOUND).build();
         }
@@ -113,19 +116,18 @@ public class UserResource {
 
         final List<User> users = userDao.getUsers();
 
-        final GenericEntity<List<User>> usersEntity = new GenericEntity<List<User>>(users) {
-        };
-
-        return Response.status(200).entity(usersEntity).build();
+        return Response.status(200).entity(new GenericEntity<List<User>>(users) {
+        }).build();
     }
 
     @GET
     @Path("/search")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response findUser(@QueryParam("name") final String name) {
-        final User user = userDao.findUser(name);
-        if (user != null) {
-            return Response.ok().entity(user).build();
+        final List<User> users = userDao.findUser(name);
+        if (users != null && !users.isEmpty()) {
+            return Response.ok().entity(new GenericEntity<List<User>>(users) {
+            }).build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).entity(USER_NOT_FOUND).build();
         }

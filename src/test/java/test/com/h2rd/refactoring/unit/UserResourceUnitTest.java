@@ -11,7 +11,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -96,12 +98,12 @@ public final class UserResourceUnitTest {
     @Test
     public void findUserTest() {
         final User user = new User();
-        when(userDao.findUser(eq("test1"))).thenReturn(user);
+        when(userDao.findUser(eq("test1"))).thenReturn(Arrays.asList(user));
         final Response response = userResource.findUser("test1");
 
         assertEquals(200, response.getStatus());
 
-        assertSame(user, response.getEntity());
+        assertSame(user, ((List<User>)response.getEntity()).get(0));
 
         verify(userDao, times(1)).findUser(eq("test1"));
     }

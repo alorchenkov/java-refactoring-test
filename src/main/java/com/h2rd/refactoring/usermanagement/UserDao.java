@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Repository
 public class UserDao implements UserOperations {
@@ -42,11 +43,10 @@ public class UserDao implements UserOperations {
     }
 
     @Override
-    public User findUser(final String name) {
+    public List<User> findUser(final String name) {
         return store.values().stream()
                 .filter(user -> StringUtils.equals(name, user.getName()))
-                .findAny()
-                .orElse(null);
+                .collect(Collectors.toList());
     }
 
     @Override
