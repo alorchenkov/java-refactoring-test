@@ -2,6 +2,7 @@ package com.h2rd.refactoring.web;
 
 import com.h2rd.refactoring.usermanagement.User;
 import com.h2rd.refactoring.usermanagement.UserOperations;
+import io.swagger.annotations.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 @Path("/users")
 @Component
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+@Api(value = "Java Refactoring Test", produces = "application/json")
 public class UserResource {
     private static final Logger LOG = LoggerFactory.getLogger(UserResource.class);
 
@@ -38,7 +40,14 @@ public class UserResource {
 
     @POST
     @Path("/add")
-    public Response addUser(final User user) {
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @ApiOperation(
+            value = "Add new user", response = User.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Resource found"),
+            @ApiResponse(code = 404, message = "Resource not found")
+    })
+    public Response addUser(@ApiParam final User user) {
         LOG.debug("user={}", user);
 
         final List<String> errors = new UserValidator().validate(user);
@@ -58,7 +67,14 @@ public class UserResource {
 
     @PUT
     @Path("/update")
-    public Response updateUser(final User user) {
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @ApiOperation(
+            value = "Update user by id (email)", response = User.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Resource found"),
+            @ApiResponse(code = 404, message = "Resource not found")
+    })
+    public Response updateUser(@ApiParam final User user) {
         LOG.debug("user={}", user);
 
         final List<String> errors = new UserValidator().validate(user);
@@ -79,7 +95,13 @@ public class UserResource {
 
     @DELETE
     @Path("/delete/{email}")
-    public Response deleteUser(@PathParam("email") final String email) {
+    @ApiOperation(
+            value = "Delete user by id (email)", response = User.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Resource found"),
+            @ApiResponse(code = 404, message = "Resource not found")
+    })
+    public Response deleteUser(@ApiParam @PathParam("email") final String email) {
         LOG.debug("email={}", email);
 
         final User user = new User("", email, new ArrayList<>());
@@ -96,6 +118,11 @@ public class UserResource {
     @GET
     @Path("/find")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @ApiOperation(
+            value = "Find all users", responseContainer = "List", response = User.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Resource found")
+    })
     public Response getUsers() {
 
         final List<User> users = userOperations.getUsers();
@@ -107,7 +134,12 @@ public class UserResource {
     @GET
     @Path("/search/{name}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response findUser(@PathParam("name") final String name) {
+    @ApiOperation(
+            value = "Search users by name", responseContainer = "List", response = User.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Resource found")
+    })
+    public Response findUser(@ApiParam @PathParam("name") final String name) {
         final List<User> users = userOperations.findUser(name);
         return Response.ok().entity(new GenericEntity<List<User>>(users) {
         }).build();
@@ -116,7 +148,13 @@ public class UserResource {
     @GET
     @Path("/{email}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response findUserById(@PathParam("email") final String email) {
+    @ApiOperation(
+            value = "Find user by id (email)", response = User.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Resource found"),
+            @ApiResponse(code = 404, message = "Resource not found")
+    })
+    public Response findUserById(@ApiParam @PathParam("email") final String email) {
         LOG.debug("email={}", email);
 
         final User user = userOperations.findUserById(email);

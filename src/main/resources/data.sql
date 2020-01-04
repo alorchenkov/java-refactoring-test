@@ -1,0 +1,3 @@
+DELETE FROM USER;
+INSERT INTO USER (EMAIL, NAME, ROLES) VALUES ('helen@test.com','Helen Hunt','ADMIN');
+INSERT INTO USER (EMAIL, NAME, ROLES) VALUES ('elsa@test.com','Elsa Disney','ADMIN, GUEST');

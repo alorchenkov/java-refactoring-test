@@ -30,6 +30,7 @@
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.login>be288f87126eb600b790adb609db08c3f27b3fa3</sonar.login>
         <sonar.coverage.jacoco.xmlReportPath>/target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPath>
+        <swagger.jersey2.jaxrs.version>1.6.0</swagger.jersey2.jaxrs.version>
     </properties>
 
     <dependencies>
@@ -94,6 +95,13 @@
             <artifactId>junit-jupiter-engine</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-jersey2-jaxrs</artifactId>
+            <version>${swagger.jersey2.jaxrs.version}</version>
+        </dependency>
+
+
     </dependencies>
 
     <build>
