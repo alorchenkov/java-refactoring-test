@@ -50,7 +50,7 @@ public final class UserResourceUnitTest {
 
         final Response response = userResource.addUser(user);
 
-        assertEquals(200, response.getStatus());
+        assertEquals(201, response.getStatus());
 
         verify(userDao, times(1)).saveUser(same(user));
     }
@@ -85,12 +85,12 @@ public final class UserResourceUnitTest {
     }
 
     @Test
-    public void findUser404Test() {
-        when(userDao.findUser(eq("test"))).thenReturn(null);
+    public void findUserNoUsersTest() {
+        when(userDao.findUser(eq("test"))).thenReturn(new ArrayList<>());
         final Response response = userResource.findUser("test");
 
-        assertEquals(404, response.getStatus());
-        assertEquals("User not found.", response.getEntity());
+        assertEquals(200, response.getStatus());
+        assertEquals(0, ((List<User>)response.getEntity()).size());
 
         verify(userDao, times(1)).findUser(eq("test"));
     }
@@ -102,7 +102,6 @@ public final class UserResourceUnitTest {
         final Response response = userResource.findUser("test1");
 
         assertEquals(200, response.getStatus());
-
         assertSame(user, ((List<User>)response.getEntity()).get(0));
 
         verify(userDao, times(1)).findUser(eq("test1"));
@@ -155,6 +154,7 @@ public final class UserResourceUnitTest {
         verify(userDao, times(0)).saveUser(same(user));
         verify(userDao, times(0)).findUserById(eq("testemail"));
     }
+
     @Test
     public void saveNoEmailUserTest() {
         final User user = new User();
@@ -168,6 +168,58 @@ public final class UserResourceUnitTest {
         assertEquals("Email is mandatory!", response.getEntity());
 
         verify(userDao, times(0)).saveUser(same(user));
-        verify(userDao, times(0)).findUserById(eq("testemail"));
+        verify(userDao, times(0)).findUserById(anyString());
+    }
+
+    @Test
+    public void saveNonValidUserTest() {
+        final User user = new User();
+
+        final Response response = userResource.addUser(user);
+
+        assertEquals(400, response.getStatus());
+        assertEquals("Email is mandatory!\n" +
+                "Name is mandatory!\n" +
+                "User has to have at least one role!", response.getEntity());
+
+        verify(userDao, times(0)).saveUser(same(user));
+        verify(userDao, times(0)).findUserById(anyString());
+    }
+
+    @Test
+    public void saveNullUserTest() {
+        final Response response = userResource.addUser(null);
+
+        assertEquals(400, response.getStatus());
+        assertEquals("User is mandatory!", response.getEntity());
+
+        verify(userDao, times(0)).saveUser(any(User.class));
+        verify(userDao, times(0)).findUserById(anyString());
+    }
+
+    @Test
+    public void findUserByIdNullTest() {
+        when(userDao.findUserById(eq("abc"))).thenReturn(null);
+
+        final Response response = userResource.findUserById("abc");
+
+        assertEquals(404, response.getStatus());
+        assertEquals("User not found.", response.getEntity());
+
+        verify(userDao, times(1)).findUserById(eq("abc"));
+    }
+
+    @Test
+    public void findUserByIdTest() {
+        final User user = new User();
+
+        when(userDao.findUserById(eq("abc"))).thenReturn(user);
+
+        final Response response = userResource.findUserById("abc");
+
+        assertEquals(200, response.getStatus());
+        assertSame(user, response.getEntity());
+
+        verify(userDao, times(1)).findUserById(eq("abc"));
     }
 }

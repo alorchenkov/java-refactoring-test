@@ -35,35 +35,35 @@ public class UserResource {
     @POST
     @Path("/add")
     public Response addUser(final User user) {
-        final List<String> errors = validateUser(user, true, true, true);
+        final List<String> errors = validateUser(user);
         if (!errors.isEmpty()) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(errors.get(0)).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(String.join("\n", errors)).build();
         }
 
         final User existingUser = userDao.findUserById(user.getEmail());
         if (existingUser == null) {
             userDao.saveUser(user);
-            return Response.ok().entity(new GenericEntity<User>(user) {
+            return Response.status(Response.Status.CREATED).entity(new GenericEntity<User>(user) {
             }).build();
         } else {
             return Response.status(Response.Status.BAD_REQUEST).entity(USER_ALREADY_EXISTS).build();
         }
     }
 
-    private List<String> validateUser(final User user, final boolean checkName, final boolean checkEmail, final boolean checkRoles) {
+    private List<String> validateUser(final User user) {
         final List<String> errors = new ArrayList<>();
         if (user == null) {
             errors.add("User is mandatory!");
         } else {
-            if (checkEmail && isBlank(user.getEmail())) {
+            if (isBlank(user.getEmail())) {
                 errors.add("Email is mandatory!");
             }
 
-            if (checkName && isBlank(user.getName())) {
+            if (isBlank(user.getName())) {
                 errors.add("Name is mandatory!");
             }
 
-            if (checkRoles && (user.getRoles() == null || user.getRoles().isEmpty())) {
+            if (user.getRoles() == null || user.getRoles().isEmpty()) {
                 errors.add("User has to have at least one role!");
             }
         }
@@ -74,10 +74,10 @@ public class UserResource {
     @PUT
     @Path("/update")
     public Response updateUser(final User user) {
-        final List<String> errors = validateUser(user, true, true, true);
+        final List<String> errors = validateUser(user);
 
         if (!errors.isEmpty()) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(errors.get(0)).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(String.join("\n", errors)).build();
         }
 
         final User existingUser = userDao.findUserById(user.getEmail());
@@ -91,14 +91,9 @@ public class UserResource {
     }
 
     @DELETE
-    @Path("/delete")
-    public Response deleteUser(@QueryParam("email") final String email) {
+    @Path("/delete/{email}")
+    public Response deleteUser(@PathParam("email") final String email) {
         final User user = new User("", email, new ArrayList<>());
-        final List<String> errors = validateUser(user, false, true, false);
-        if (!errors.isEmpty()) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(errors.get(0)).build();
-        }
-
         final User existingUser = userDao.findUserById(user.getEmail());
         if (existingUser != null) {
             userDao.deleteUser(user);
@@ -121,15 +116,20 @@ public class UserResource {
     }
 
     @GET
-    @Path("/search")
+    @Path("/search/{name}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response findUser(@QueryParam("name") final String name) {
+    public Response findUser(@PathParam("name") final String name) {
         final List<User> users = userDao.findUser(name);
-        if (users != null && !users.isEmpty()) {
-            return Response.ok().entity(new GenericEntity<List<User>>(users) {
-            }).build();
-        } else {
-            return Response.status(Response.Status.NOT_FOUND).entity(USER_NOT_FOUND).build();
-        }
+        return Response.ok().entity(new GenericEntity<List<User>>(users) {
+        }).build();
+    }
+
+    @GET
+    @Path("/{email}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response findUserById(@PathParam("email") final String email) {
+        final User user = userDao.findUserById(email);
+        return user != null ? Response.ok().entity(new GenericEntity<User>(user) {
+        }).build() : Response.status(Response.Status.NOT_FOUND).entity(USER_NOT_FOUND).build();
     }
 }
