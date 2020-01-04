@@ -148,7 +148,7 @@ public class UserResource {
                     errors.add(ONE_ROLE_IS_REQUIRED);
                 }
 
-                if (user.getRoles() != null && user.getRoles().stream().anyMatch(role -> StringUtils.isBlank(role))) {
+                if (user.getRoles() != null && user.getRoles().stream().anyMatch(StringUtils::isBlank)) {
                     errors.add(NO_BLANK_ROLES_ALLOWED);
                 }
             }

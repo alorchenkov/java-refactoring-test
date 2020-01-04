@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -23,6 +24,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class UserDbDao implements UserOperations {
     private static final Logger LOG = LoggerFactory.getLogger(UserDbDao.class);
 
+    private static final String NAME = "NAME";
+    private static final String EMAIL = "EMAIL";
+    private static final String ROLES = "ROLES";
+
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -31,20 +36,15 @@ public class UserDbDao implements UserOperations {
         checkNotNull(jdbcTemplate, "jdbcTemplate must not be null!");
     }
 
-
-    private static User mapUser(ResultSet rs, int rowNumber) throws SQLException {
-        return new User(rs.getString("NAME"), rs.getString("EMAIL"), Arrays.asList(rs.getString("ROLES").split(",")));
-    }
-
     @Override
     @Transactional
     public void saveUser(final User user) {
         LOG.debug("user={}", user);
 
         final SqlParameterSource namedParameters = new MapSqlParameterSource()
-                .addValue("EMAIL", user.getEmail())
-                .addValue("NAME", user.getName())
-                .addValue("ROLES", String.join(", ", user.getRoles()));
+                .addValue(EMAIL, user.getEmail())
+                .addValue(NAME, user.getName())
+                .addValue(ROLES, String.join(", ", user.getRoles()));
         final int createStatus = jdbcTemplate.update("INSERT INTO USER (EMAIL, NAME, ROLES) VALUES (:EMAIL, :NAME, :ROLES)", namedParameters);
 
         LOG.debug("createStatus={}", createStatus);
@@ -53,7 +53,7 @@ public class UserDbDao implements UserOperations {
     @Override
     @Transactional
     public List<User> getUsers() {
-        final List<User> users = jdbcTemplate.query("SELECT * FROM USER", UserDbDao::mapUser);
+        final List<User> users = jdbcTemplate.query("SELECT * FROM USER", (rs, i) -> new User(rs.getString(NAME), rs.getString(EMAIL), Arrays.asList(rs.getString(ROLES).split(","))));
 
         LOG.debug("users.size={}", users.size());
         return users;
@@ -65,7 +65,7 @@ public class UserDbDao implements UserOperations {
         LOG.debug("userToDelete={}", userToDelete);
 
         final SqlParameterSource namedParameters = new MapSqlParameterSource()
-                .addValue("EMAIL", userToDelete.getEmail());
+                .addValue(EMAIL, userToDelete.getEmail());
         final int deleteStatus = jdbcTemplate.update("DELETE FROM USER WHERE EMAIL=:EMAIL", namedParameters);
 
         LOG.debug("deleteStatus={}", deleteStatus);
@@ -77,9 +77,9 @@ public class UserDbDao implements UserOperations {
         LOG.debug("userToUpdate={}", userToUpdate);
 
         final SqlParameterSource namedParameters = new MapSqlParameterSource()
-                .addValue("EMAIL", userToUpdate.getEmail())
-                .addValue("NAME", userToUpdate.getEmail())
-                .addValue("ROLES", String.join(", ", userToUpdate.getRoles()));
+                .addValue(EMAIL, userToUpdate.getEmail())
+                .addValue(NAME, userToUpdate.getEmail())
+                .addValue(ROLES, String.join(", ", userToUpdate.getRoles()));
         final int updateStatus = jdbcTemplate.update("UPDATE USER SET NAME=:NAME, ROLES=:ROLES WHERE EMAIL=:EMAIL", namedParameters);
 
         LOG.debug("updateStatus={}", updateStatus);
@@ -91,8 +91,8 @@ public class UserDbDao implements UserOperations {
         LOG.debug("name={}", name);
 
         final SqlParameterSource namedParameters = new MapSqlParameterSource()
-                .addValue("NAME", name);
-        final List<User> result = jdbcTemplate.query("SELECT * FROM USER WHERE NAME=:NAME", namedParameters, UserDbDao::mapUser);
+                .addValue(NAME, name);
+        final List<User> result = jdbcTemplate.query("SELECT * FROM USER WHERE NAME=:NAME", namedParameters, new UserMapper());
 
         LOG.debug("result.size={}", result.size());
         return result;
@@ -104,11 +104,18 @@ public class UserDbDao implements UserOperations {
         LOG.debug("email={}", email);
 
         final SqlParameterSource namedParameters = new MapSqlParameterSource()
-                .addValue("EMAIL", email);
-        final List<User> users = jdbcTemplate.query("SELECT * FROM USER WHERE EMAIL=:EMAIL", namedParameters, UserDbDao::mapUser);
+                .addValue(EMAIL, email);
+        final List<User> users = jdbcTemplate.query("SELECT * FROM USER WHERE EMAIL=:EMAIL", namedParameters, new UserMapper());
         final User result = !users.isEmpty() ? users.get(0) : null;
 
         LOG.debug("result={}", result);
         return result;
+    }
+
+    private class UserMapper implements RowMapper<User> {
+        @Override
+        public User mapRow(final ResultSet rs, final int i) throws SQLException {
+            return new User(rs.getString(NAME), rs.getString(EMAIL), Arrays.asList(rs.getString(ROLES).split(",")));
+        }
     }
 }
