@@ -3,19 +3,24 @@ package test.com.h2rd.refactoring.unit;
 import com.h2rd.refactoring.usermanagement.User;
 import com.h2rd.refactoring.usermanagement.UserDao;
 import com.h2rd.refactoring.usermanagement.UserOperations;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+
+@ExtendWith(MockitoExtension.class)
 public final class UserDaoUnitTest {
 
     private final UserOperations userDao = new UserDao();
 
-    @Before
+    @BeforeEach
     public void setUp() {
     }
 

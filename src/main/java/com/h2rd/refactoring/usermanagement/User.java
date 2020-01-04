@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 @XmlRootElement
-public class User {
+public final class User {
 
     private String name;
     private String email;
@@ -64,5 +64,14 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hash(name, email, roles);
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", roles=" + roles +
+                '}';
     }
 }

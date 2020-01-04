@@ -3,11 +3,11 @@ package test.com.h2rd.refactoring.unit;
 import com.h2rd.refactoring.usermanagement.User;
 import com.h2rd.refactoring.usermanagement.UserOperations;
 import com.h2rd.refactoring.web.UserResource;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
@@ -15,14 +15,15 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public final class UserResourceUnitTest {
     @Mock
     private UserOperations userDao;
@@ -90,7 +91,7 @@ public final class UserResourceUnitTest {
         final Response response = userResource.findUser("test");
 
         assertEquals(200, response.getStatus());
-        assertEquals(0, ((List<User>)response.getEntity()).size());
+        assertEquals(0, ((List<User>) response.getEntity()).size());
 
         verify(userDao, times(1)).findUser(eq("test"));
     }
@@ -102,7 +103,7 @@ public final class UserResourceUnitTest {
         final Response response = userResource.findUser("test1");
 
         assertEquals(200, response.getStatus());
-        assertSame(user, ((List<User>)response.getEntity()).get(0));
+        assertSame(user, ((List<User>) response.getEntity()).get(0));
 
         verify(userDao, times(1)).findUser(eq("test1"));
     }
@@ -169,6 +170,23 @@ public final class UserResourceUnitTest {
 
         verify(userDao, times(0)).saveUser(same(user));
         verify(userDao, times(0)).findUserById(anyString());
+    }
+
+    @Test
+    public void saveWithEmptyRoleUserTest() {
+        final User user = new User();
+        user.setName("testname");
+        user.setEmail("testemail");
+        user.getRoles().add("testrole");
+        user.getRoles().add(" ");
+
+        final Response response = userResource.addUser(user);
+
+        assertEquals(400, response.getStatus());
+        assertEquals("User has not to have any blank Role (empty string)!", response.getEntity());
+
+        verify(userDao, times(0)).saveUser(same(user));
+        verify(userDao, times(0)).findUserById(eq("testemail"));
     }
 
     @Test

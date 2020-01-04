@@ -4,10 +4,10 @@ import com.h2rd.refactoring.RefactorApplication;
 import com.h2rd.refactoring.usermanagement.User;
 import org.assertj.core.util.Maps;
 import org.glassfish.grizzly.http.util.HttpStatus;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -16,7 +16,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
@@ -25,23 +25,23 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.Collection;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = RefactorApplication.class)
-public final class UserIntegrationTest {
+public class UserIntegrationTest {
     private static final String BASE_PATH = "/users";
 
     @LocalServerPort
     int randomServerPort;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         addUsers();
     }
 
-    @After
+    @AfterEach
     public void cleanUp() {
         getUsers().forEach(user -> deleteUser(user.getEmail()));
     }
@@ -73,6 +73,8 @@ public final class UserIntegrationTest {
         });
 
         assertEquals(HttpStatus.OK_200.getStatusCode(), response.getStatusCode().value());
+
+        assertEquals(1, response.getBody().size());
 
         final User actual = response.getBody().get(0);
 
