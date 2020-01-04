@@ -39,12 +39,11 @@ public class UserResource {
     }
 
     @POST
-    @Path("/add")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @ApiOperation(
             value = "Add new user", response = User.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Resource found"),
+            @ApiResponse(code = 201, message = "Resource was created"),
             @ApiResponse(code = 404, message = "Resource not found")
     })
     public Response addUser(@ApiParam final User user) {
@@ -66,12 +65,11 @@ public class UserResource {
     }
 
     @PUT
-    @Path("/update")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @ApiOperation(
             value = "Update user by id (email)", response = User.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Resource found"),
+            @ApiResponse(code = 200, message = "Resource was updated"),
             @ApiResponse(code = 404, message = "Resource not found")
     })
     public Response updateUser(@ApiParam final User user) {
@@ -94,11 +92,11 @@ public class UserResource {
     }
 
     @DELETE
-    @Path("/delete/{email}")
+    @Path("/{email}")
     @ApiOperation(
             value = "Delete user by id (email)", response = User.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Resource found"),
+            @ApiResponse(code = 200, message = "Resource was deleted"),
             @ApiResponse(code = 404, message = "Resource not found")
     })
     public Response deleteUser(@ApiParam @PathParam("email") final String email) {
@@ -116,7 +114,6 @@ public class UserResource {
     }
 
     @GET
-    @Path("/find")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @ApiOperation(
             value = "Find all users", responseContainer = "List", response = User.class)
@@ -132,7 +129,7 @@ public class UserResource {
     }
 
     @GET
-    @Path("/search/{name}")
+    @Path("/{name}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @ApiOperation(
             value = "Search users by name", responseContainer = "List", response = User.class)
@@ -146,7 +143,7 @@ public class UserResource {
     }
 
     @GET
-    @Path("/{email}")
+    @Path("/user/{email}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @ApiOperation(
             value = "Find user by id (email)", response = User.class)

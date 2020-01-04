@@ -51,7 +51,7 @@ public class UserIntegrationTest {
     public void testGetUsers() {
         final RestTemplate testRestTemplate = new RestTemplate();
 
-        final ResponseEntity<Collection<User>> response = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/rest/" + BASE_PATH + "/find", HttpMethod.GET, null, new ParameterizedTypeReference<Collection<User>>() {
+        final ResponseEntity<Collection<User>> response = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/rest/" + BASE_PATH, HttpMethod.GET, null, new ParameterizedTypeReference<Collection<User>>() {
         });
 
         assertEquals(HttpStatus.OK_200.getStatusCode(), response.getStatusCode().value());
@@ -66,7 +66,7 @@ public class UserIntegrationTest {
     public void testSearchUser() {
         final RestTemplate testRestTemplate = new RestTemplate();
 
-        final UriComponents builder = UriComponentsBuilder.fromUriString("http://localhost/rest" + BASE_PATH + "/search/{name}")
+        final UriComponents builder = UriComponentsBuilder.fromUriString("http://localhost/rest" + BASE_PATH + "/{name}")
                 .port(randomServerPort).buildAndExpand(Maps.newHashMap("name", "integration"));
 
         final ResponseEntity<List<User>> response = testRestTemplate.exchange(builder.toUriString(), HttpMethod.GET, null, new ParameterizedTypeReference<List<User>>() {
@@ -86,7 +86,7 @@ public class UserIntegrationTest {
     public void testFindUserNoUser() {
         final RestTemplate testRestTemplate = new RestTemplateBuilder().errorHandler(new NoOpResponseErrorHandler()).build();
 
-        final UriComponents builder = UriComponentsBuilder.fromUriString("http://localhost/rest" + BASE_PATH + "/search/{name}")
+        final UriComponents builder = UriComponentsBuilder.fromUriString("http://localhost/rest" + BASE_PATH + "/{name}")
                 .port(randomServerPort).buildAndExpand(Maps.newHashMap("name", "integration1"));
 
         final ResponseEntity<List<User>> response = testRestTemplate.exchange(builder.toUriString(), HttpMethod.GET, null, new ParameterizedTypeReference<List<User>>() {
@@ -101,7 +101,7 @@ public class UserIntegrationTest {
     public void testDeleteUser() {
         final RestTemplate testRestTemplate = new RestTemplateBuilder().errorHandler(new NoOpResponseErrorHandler()).build();
 
-        final UriComponents builder = UriComponentsBuilder.fromUriString("http://localhost/rest" + BASE_PATH + "/delete/{email}")
+        final UriComponents builder = UriComponentsBuilder.fromUriString("http://localhost/rest" + BASE_PATH + "/{email}")
                 .port(randomServerPort).buildAndExpand(Maps.newHashMap("email", "initial@integration.com"));
 
         final ResponseEntity<User> response = testRestTemplate.exchange(builder.toUriString(), HttpMethod.DELETE, null, User.class);
@@ -121,7 +121,7 @@ public class UserIntegrationTest {
 
         final RestTemplate testRestTemplate = new RestTemplateBuilder().errorHandler(new NoOpResponseErrorHandler()).build();
 
-        final ResponseEntity<User> result = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/rest" + BASE_PATH + "/add", HttpMethod.POST, new HttpEntity<>(updated), User.class);
+        final ResponseEntity<User> result = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/rest" + BASE_PATH, HttpMethod.POST, new HttpEntity<>(updated), User.class);
 
         assertEquals(201, result.getStatusCodeValue());
         assertEquals(2, getUsers().size());
@@ -137,7 +137,7 @@ public class UserIntegrationTest {
 
         final RestTemplate testRestTemplate = new RestTemplateBuilder().errorHandler(new NoOpResponseErrorHandler()).build();
 
-        final ResponseEntity<User> result = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/rest" + BASE_PATH + "/update", HttpMethod.PUT, new HttpEntity<>(updated), User.class);
+        final ResponseEntity<User> result = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/rest" + BASE_PATH, HttpMethod.PUT, new HttpEntity<>(updated), User.class);
 
         assertEquals(200, result.getStatusCodeValue());
         assertEquals(1, getUsers().size());
@@ -153,7 +153,7 @@ public class UserIntegrationTest {
 
         final RestTemplate testRestTemplate = new RestTemplateBuilder().errorHandler(new NoOpResponseErrorHandler()).build();
 
-        final ResponseEntity<String> result = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/rest" + BASE_PATH + "/update", HttpMethod.PUT, new HttpEntity<>(updated), String.class);
+        final ResponseEntity<String> result = testRestTemplate.exchange("http://localhost:" + randomServerPort + "/rest" + BASE_PATH, HttpMethod.PUT, new HttpEntity<>(updated), String.class);
 
         assertEquals(404, result.getStatusCodeValue());
         assertEquals("User not found.", result.getBody());
@@ -164,7 +164,7 @@ public class UserIntegrationTest {
     public void findUserByIdNullTest() {
         final RestTemplate testRestTemplate = new RestTemplateBuilder().errorHandler(new NoOpResponseErrorHandler()).build();
 
-        final UriComponents builder = UriComponentsBuilder.fromUriString("http://localhost/rest" + BASE_PATH + "/{email}")
+        final UriComponents builder = UriComponentsBuilder.fromUriString("http://localhost/rest" + BASE_PATH + "/user/{email}")
                 .port(randomServerPort).buildAndExpand(Maps.newHashMap("email", "integartion1"));
         final ResponseEntity<String> response = testRestTemplate.exchange(builder.toUriString(), HttpMethod.GET, null, String.class);
 
@@ -177,7 +177,7 @@ public class UserIntegrationTest {
     public void findUserByIdTest() {
         final RestTemplate testRestTemplate = new RestTemplateBuilder().errorHandler(new NoOpResponseErrorHandler()).build();
 
-        final UriComponents builder = UriComponentsBuilder.fromUriString("http://localhost/rest" + BASE_PATH + "/{email}")
+        final UriComponents builder = UriComponentsBuilder.fromUriString("http://localhost/rest" + BASE_PATH + "/user/{email}")
                 .port(randomServerPort).buildAndExpand(Maps.newHashMap("email", "initial@integration.com"));
 
         final ResponseEntity<User> response = testRestTemplate.exchange(builder.toUriString(), HttpMethod.GET, null, User.class);
@@ -211,7 +211,7 @@ public class UserIntegrationTest {
     private Collection<User> getUsers() {
         final RestTemplate testRestTemplate = new RestTemplate();
 
-        final UriComponents builder = UriComponentsBuilder.fromUriString("http://localhost/rest" + BASE_PATH + "/find")
+        final UriComponents builder = UriComponentsBuilder.fromUriString("http://localhost/rest" + BASE_PATH)
                 .port(randomServerPort).build();
 
         final ResponseEntity<Collection<User>> response =
@@ -225,7 +225,7 @@ public class UserIntegrationTest {
     private ResponseEntity<User> deleteUser(final String email) {
         final RestTemplate testRestTemplate = new RestTemplateBuilder().errorHandler(new NoOpResponseErrorHandler()).build();
 
-        final UriComponents builder = UriComponentsBuilder.fromUriString("http://localhost/rest" + BASE_PATH + "/delete/{email}")
+        final UriComponents builder = UriComponentsBuilder.fromUriString("http://localhost/rest" + BASE_PATH + "/{email}")
                 .port(randomServerPort).buildAndExpand(Maps.newHashMap("email", email));
 
         return testRestTemplate.exchange(builder.toUriString(), HttpMethod.DELETE, null, User.class);
@@ -234,7 +234,7 @@ public class UserIntegrationTest {
     private ResponseEntity<User> addUser(final User user) {
         final RestTemplate testRestTemplate = new RestTemplateBuilder().errorHandler(new NoOpResponseErrorHandler()).build();
 
-        final UriComponents builder = UriComponentsBuilder.fromUriString("http://localhost/rest" + BASE_PATH + "/add")
+        final UriComponents builder = UriComponentsBuilder.fromUriString("http://localhost/rest" + BASE_PATH)
                 .port(randomServerPort).build();
 
         return testRestTemplate.exchange(builder.toUriString(), HttpMethod.POST, new HttpEntity<>(user), User.class);
