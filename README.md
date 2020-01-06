@@ -41,5 +41,8 @@ mvn clean package && java -Dlogging.level.com.h2rd.refactoring=DEBUG -jar target
 ### Local Code Coverage Report
 How to see Code Coverage report locally:
 1. Go to the folder with the pom.xml file: .../java-refactoring-test/
-2. Run mvn clean package
-3. Open in browser html report: java-refactoring-test/target/site/jacoco/index.html
+2. Run command 
+```
+mvn clean package
+```
+3. Open in browser html report: .../java-refactoring-test/target/site/jacoco/index.html
