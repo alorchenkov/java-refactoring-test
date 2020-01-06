@@ -1,8 +1,15 @@
 Spring Boot Jersey Application:
-1. Persistence Layer: Java Collection.
+Persistence Layer: 
+1. Java Collection - ConcurrentHashMap.
+2. SQL server - embedded H2 SQL engine.
 
 Code Quality report link, it is available for collaborates Github users:
 https://sonarcloud.io/dashboard?id=alorchenkov_java-refactoring-test
+
+The application is deployed and running in the Cloud (MS Azure) with SQL database
+as Persistence layer:
+https://java-refactoring-test-1578179374175.azurewebsites.net/swagger/index.html
+Please, select HTTPS scheme when try out the API with Swagger UI.
 
 How to run:
 Required pre-installed software: maven and Java 8+.
@@ -12,11 +19,11 @@ Required pre-installed software: maven and Java 8+.
 and 'db-dao' for SQL embedded engine (H2)
 3.1. SQL Persistence Layer profile command:
 ```
-mvn clean package && java -Dspring.profiles.active=db-dao -jar target/java-refactoring-test-0.0.1-SNAPSHOT.war
+mvn clean package && java -Dspring.profiles.active=db-dao -Dlogging.level.com.h2rd.refactoring=DEBUG -jar target/java-refactoring-test-0.0.1-SNAPSHOT.war
 ```
 3.2. Java Collection Persistence Layer profile command:
 ```
-mvn clean package && java -jar target/java-refactoring-test-0.0.1-SNAPSHOT.war
+mvn clean package && java -Dlogging.level.com.h2rd.refactoring=DEBUG -jar target/java-refactoring-test-0.0.1-SNAPSHOT.war
  ```
 4. Open in browser http://localhost:8080/swagger/index.html
 5. Use Swagger or any REST client (POSTMAN, soapUI, etc) and http://localhost:8080/rest/users/add operation to populate the embedded store.
