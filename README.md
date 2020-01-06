@@ -29,9 +29,7 @@ mvn clean package && java -Dspring.profiles.active=db-dao -Dlogging.level.com.h2
 mvn clean package && java -Dlogging.level.com.h2rd.refactoring=DEBUG -jar target/java-refactoring-test-0.0.1-SNAPSHOT.war
  ```
 4. Open in browser http://localhost:8080/swagger/index.html
-5. Use Swagger or any REST client (POSTMAN, soapUI, etc) and </br>
-POST http://localhost:8080/rest/users/ 
-</br> operation to populate the embedded store.
+5. Use Swagger or any REST client (POSTMAN, soapUI, etc) and <b>POST</b> http://localhost:8080/rest/users/ operation to populate the embedded store.
 6. POSTMAN example of User request:
 ```xml
                                     <user>
