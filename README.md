@@ -4,7 +4,7 @@
 2. SQL server - embedded H2 SQL engine.
 
 ### Code Quality Report
-Code Quality report link, it is available for collaborates Github users:</br>
+Code Quality report link, it is available only for collaborators Github users, who was added as collaborator to this private repository:</br>
 https://sonarcloud.io/dashboard?id=alorchenkov_java-refactoring-test
 </br> There is Code Coverage section there as well.
 
