@@ -1,4 +1,4 @@
-## Spring Boot Jersey Application.
+## Spring Boot Jersey Application
 ### Persistence Layer: 
 1. Java Collection - ConcurrentHashMap.
 2. SQL server - embedded H2 SQL engine.
